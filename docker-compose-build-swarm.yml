@@ -6,14 +6,10 @@ services:
     image: app:latest
     hostname: "app-{{.Task.Slot}}"
     env_file:
-      - deployment.env
+      - ./db_params.env
     deploy:
       mode: replicated
       replicas: 3
-      endpoint_mode: vip
-      placement:
-        constraints:
-          - "node.role==worker"
     networks:
       - proxy_net
       - db_net
@@ -40,21 +36,16 @@ services:
     networks:
       - proxy_net
 # DB container
-  db:
-    image: postgres:11.3
-    hostname: "db-{{.Task.Slot}}"
+  galera:
+    image: pythonincontainers/galera:latest
     env_file:
-      - deployment.env
-    deploy:
-      mode: replicated
-      replicas: 3
-      endpoint_mode: vip
+      - ./db_params.env
     networks:
-      - db_net
-    volumes:
-      - type: volume
-        source: polls_vol
-        target: /var/lib/postgres/data
+      - galera_net
+    deploy:
+      mode: global
+    environment:
+      SERVICE_NAME: django-polls_galera
 
 configs:
   proxy_conf:
@@ -69,7 +60,7 @@ volumes:
 networks:
   db_net:
     driver: overlay
-    name: galera_net
+    name: db_net
     attachable: true
   proxy_net:
     driver: overlay

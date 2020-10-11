@@ -13,7 +13,7 @@ services:
     networks:
       - polls_net
     env_file:
-      - deployment.env
+      - db_params.env
     command: ["/bin/bash", "-c",
               "python manage.py migrate;
                python manage.py loaddata initial_data.json;
@@ -22,4 +22,4 @@ services:
 networks:
   polls_net:
     external:
-      name: swarm_polls_net
+      name: db_net

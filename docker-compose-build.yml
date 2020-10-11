@@ -35,3 +35,9 @@ services:
       args:
         BASE_IMAGE: app-proxy:latest
     entrypoint: /bin/true
+# Galera Image
+  app-proxy:
+    image: galera:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.galera
