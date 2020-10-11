@@ -19,3 +19,7 @@ services:
                python manage.py loaddata initial_data.json;
                python manage.py createsuperuser"]
     tty: true
+networks:
+  polls_net:
+    external:
+      name: swarm_polls_net

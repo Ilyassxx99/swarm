@@ -26,5 +26,6 @@ services:
 
 networks:
   polls_net:
+    attachable: true
 volumes:
   polls_vol:
