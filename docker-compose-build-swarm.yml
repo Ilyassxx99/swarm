@@ -2,12 +2,11 @@ version: '3.8'
 
 services:
 # App container
-  django:
+  app:
     image: django:latest
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.django
     container_name: "app-{{.Task.Slot}}"
+    env_file:
+      - deployment.env
     deploy:
       mode: replicated
       replicas: 3
@@ -23,7 +22,7 @@ services:
         mode: 0440
     networks:
       mynet:
-        ipv4_address: 172.16.0.10
+        ipv4_address: 172.10.0.10
     volume:
       - type: volume
         source:
@@ -31,9 +30,6 @@ services:
 # uWSGI Container
   app-proxy:
     image: app-proxy:latest
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.uwsgi
     container_name: uwsgi-proxy
     deploy:
       endpoint_mode: vip
@@ -41,7 +37,7 @@ services:
         - "node.role==manager"
     networks:
       mynet:
-        ipv4_address: 172.16.0.15
+        ipv4_address: 172.10.0.15
     volume:
       - type: volume
         source:
@@ -51,11 +47,6 @@ services:
     depends_on:
       - django
     image: www-proxy:latest
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.nginx
-      args:
-        BASE_IMAGE: django:latest
     container_name: nginx-proxy
     deploy:
       endpoint_mode: vip
@@ -63,43 +54,36 @@ services:
         - "node.role==manager"
     networks:
       mynet:
-        ipv4_address: 172.16.0.30
+        ipv4_address: 172.10.0.30
     volume:
       - type: volume
         source:
         target:
 # DB container
-  app:
-    depends_on:
-      - app-proxy
-    image: app:latest
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.db
-      args:
-        BASE_IMAGE: app-proxy:latest
+  db:
+    image: postgres:11.3
     container_name: "db-{{.Task.Slot}}"
+    env_file:
+      - deployment.env
     deploy:
       mode: replicated
       replicas: 3
-      placement:
-        max_replicas_per_node: 1
       endpoint_mode: vip
     networks:
       mynet:
-        ipv4_address: 172.16.0.20
+        ipv4_address: 172.10.0.20
     volume:
       - type: volume
-        source:
-        target:
+        source: polls_vol
+        target: /var/lib/postgres/data
 
 configs:
   nginx_config:
-    file: Configs/flask_lb_nginx.conf
+    file: configs/flask_lb_nginx.conf
 
 secrets:
   my_password:
-    file: Secrets/my_password.txt
+    file: secrets/my_password.txt
 
 networks:
   mynet:
@@ -108,4 +92,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "172.16.0.0/24"
+        - subnet: "172.10.0.0/24"

@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-# App container
+# App Image
   django:
     image: django:latest
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.django
-# uWSGI Container
+# uWSGI Image
   app-proxy:
     image: app-proxy:latest
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.uwsgi
-# Nginx Container
+# Nginx Image
   www-proxy:
     depends_on:
       - django
@@ -24,7 +24,7 @@ services:
       args:
         BASE_IMAGE: django:latest
     entrypoint: /bin/true
-# DB container
+# DB Image
   app:
     depends_on:
       - app-proxy
