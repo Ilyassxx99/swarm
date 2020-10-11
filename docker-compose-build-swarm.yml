@@ -23,10 +23,6 @@ services:
     networks:
       mynet:
         ipv4_address: 172.10.0.10
-    volume:
-      - type: volume
-        source:
-        target:
 # uWSGI Container
   app-proxy:
     image: app-proxy:latest
@@ -38,10 +34,6 @@ services:
     networks:
       mynet:
         ipv4_address: 172.10.0.15
-    volume:
-      - type: volume
-        source:
-        target:
 # Nginx Container
   www-proxy:
     depends_on:
@@ -55,10 +47,6 @@ services:
     networks:
       mynet:
         ipv4_address: 172.10.0.30
-    volume:
-      - type: volume
-        source:
-        target:
 # DB container
   db:
     image: postgres:11.3
@@ -72,7 +60,7 @@ services:
     networks:
       mynet:
         ipv4_address: 172.10.0.20
-    volume:
+    volumes:
       - type: volume
         source: polls_vol
         target: /var/lib/postgres/data
@@ -85,6 +73,8 @@ secrets:
   my_password:
     file: secrets/my_password.txt
 
+volumes:
+  polls_vol:
 networks:
   mynet:
     driver: overlay
