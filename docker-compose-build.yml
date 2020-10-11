@@ -21,7 +21,7 @@ services:
       - django
     image: www-proxy:latest
     build:
-      context: ./Dockerfiles
+      context: ./django-polls
       dockerfile: Dockerfile.nginx
       args:
         BASE_IMAGE: django:latest
@@ -32,7 +32,7 @@ services:
       - app-proxy
     image: app:latest
     build:
-      context: ./Dockerfiles
+      context: ./django-polls
       dockerfile: Dockerfile.app
       args:
         BASE_IMAGE: app-proxy:latest
