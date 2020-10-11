@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose -f docker-compose-deploy.yml run --rm app python manage.py migrate
+docker-compose -f docker-compose-deploy.yml run --rm app1 python manage.py migrate
