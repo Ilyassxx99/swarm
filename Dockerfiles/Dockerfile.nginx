@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=app:latest
+ARG BASE_IMAGE=django:latest
 FROM $BASE_IMAGE as dev
 WORKDIR /code
-COPY . .
+COPY ../django-polls .
 RUN pip install dj-database-url==0.5.0
 RUN python manage.py collectstatic
 

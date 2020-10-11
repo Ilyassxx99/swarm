@@ -8,7 +8,7 @@ services:
     volumes:
       - polls_vol:/var/lib/postgres/data
 
-  app1:
+  app:
     image: app:latest
     networks:
       - polls_net
