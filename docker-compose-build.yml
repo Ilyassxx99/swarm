@@ -7,14 +7,12 @@ services:
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.django
-    container_name: "app"
 # uWSGI Container
   app-proxy:
     image: app-proxy:latest
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.uwsgi
-    container_name: uwsgi-proxy
 # Nginx Container
   www-proxy:
     depends_on:
@@ -25,7 +23,6 @@ services:
       dockerfile: Dockerfile.nginx
       args:
         BASE_IMAGE: django:latest
-    container_name: nginx-proxy
     entrypoint: /bin/true
 # DB container
   app:
@@ -37,5 +34,4 @@ services:
       dockerfile: Dockerfile.app
       args:
         BASE_IMAGE: app-proxy:latest
-    container_name: "db"
     entrypoint: /bin/true
