@@ -41,7 +41,7 @@ services:
     env_file:
       - ./db_params.env
     networks:
-      - galera_net
+      - db_net
     deploy:
       mode: global
     environment:
