@@ -4,16 +4,13 @@ services:
 # App container
   app:
     image: django:latest
-    container_name: "app-{{.Task.Slot}}"
+    hostname: "app-{{.Task.Slot}}"
     env_file:
       - deployment.env
     deploy:
       mode: replicated
       replicas: 3
       endpoint_mode: vip
-      placement:
-        constraints:
-          - "node.role==worker"
     secrets:
       - source: my_password
         target: my_password
@@ -26,12 +23,9 @@ services:
 # uWSGI Container
   app-proxy:
     image: app-proxy:latest
-    container_name: uwsgi-proxy
+    hostname: uwsgi-proxy
     deploy:
       endpoint_mode: vip
-      placement:
-        constraints:
-          - "node.role==manager"
     networks:
       mynet:
         ipv4_address: 172.10.0.15
@@ -40,19 +34,16 @@ services:
     depends_on:
       - django
     image: www-proxy:latest
-    container_name: nginx-proxy
+    hostname: nginx-proxy
     deploy:
       endpoint_mode: vip
-      placement:
-        constraints:
-          - "node.role==manager"
     networks:
       mynet:
         ipv4_address: 172.10.0.30
 # DB container
   db:
     image: postgres:11.3
-    container_name: "db-{{.Task.Slot}}"
+    hostname: "db-{{.Task.Slot}}"
     env_file:
       - deployment.env
     deploy:
