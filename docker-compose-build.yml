@@ -7,7 +7,7 @@ services:
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.django
-    container_name: "app-{{.Task.Slot}}"
+    container_name: "app"
 # uWSGI Container
   app-proxy:
     image: app-proxy:latest
@@ -26,14 +26,16 @@ services:
       args:
         BASE_IMAGE: django:latest
     container_name: nginx-proxy
+    entrypoint: /bin/true
 # DB container
-  app1:
+  app:
     depends_on:
       - app-proxy
-    image: app1:latest
+    image: app:latest
     build:
       context: ./django-polls
       dockerfile: Dockerfile.app
       args:
         BASE_IMAGE: app-proxy:latest
-    container_name: "db-{{.Task.Slot}}"
+    container_name: "db"
+    entrypoint: /bin/true

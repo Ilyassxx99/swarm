@@ -9,7 +9,7 @@ services:
 # please run with:
 # docker-compose -f django-polls-deploy.yml -f django-polls-ops.yml run --rm init
   init:
-    image: app1:latest
+    image: app:latest
     networks:
       - polls_net
     env_file:

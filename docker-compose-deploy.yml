@@ -6,16 +6,16 @@ services:
     networks:
       - polls_net
     volumes:
-      - polls_vol:/var/lib/postgresql/data
+      - polls_vol:/var/lib/postgres/data
     env_file:
-      - ./Configs/db.env
+      - db.env
 
   app1:
-    image: app1:latest
+    image: app:latest
     networks:
       - polls_net
     env_file:
-      - ./Configs/db.env
+      - db.env
 
   proxy:
     image: www-proxy:latest
