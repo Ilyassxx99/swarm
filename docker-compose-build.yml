@@ -33,7 +33,7 @@ services:
     image: app:latest
     build:
       context: ./Dockerfiles
-      dockerfile: Dockerfile.db
+      dockerfile: Dockerfile.app
       args:
         BASE_IMAGE: app-proxy:latest
     container_name: "db-{{.Task.Slot}}"
