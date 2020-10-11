@@ -8,14 +8,14 @@ services:
     volumes:
       - polls_vol:/var/lib/postgres/data
     env_file:
-      - db.env
+      - deployment.env
 
   app1:
     image: app:latest
     networks:
       - polls_net
     env_file:
-      - db.env
+      - deployment.env
 
   proxy:
     image: www-proxy:latest
