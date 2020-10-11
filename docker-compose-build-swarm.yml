@@ -29,8 +29,9 @@ services:
     container_name: uwsgi-proxy
     deploy:
       endpoint_mode: vip
-      constraints:
-        - "node.role==manager"
+      placement:
+        constraints:
+          - "node.role==manager"
     networks:
       mynet:
         ipv4_address: 172.10.0.15
@@ -42,8 +43,9 @@ services:
     container_name: nginx-proxy
     deploy:
       endpoint_mode: vip
-      constraints:
-        - "node.role==manager"
+      placement:
+        constraints:
+          - "node.role==manager"
     networks:
       mynet:
         ipv4_address: 172.10.0.30
