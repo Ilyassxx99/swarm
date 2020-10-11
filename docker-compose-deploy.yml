@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:11.3
+    networks:
+      - polls_net
+    volumes:
+      - polls_vol:/var/lib/postgres/data
+
+  app1:
+    image: app:latest
+    networks:
+      - polls_net
+    env_file:
+      - deployment.env
+
+  proxy:
+    image: www-proxy:latest
+    networks:
+      - polls_net
+    ports:
+      - "8000:8000"
+
+networks:
+  polls_net:
+volumes:
+  polls_vol:

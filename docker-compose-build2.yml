@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+# App container
+  django:
+    image: django:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.django
+    container_name: "app-{{.Task.Slot}}"
+    deploy:
+      mode: replicated
+      replicas: 3
+      endpoint_mode: vip
+      placement:
+        constraints:
+          - "node.role==worker"
+    secrets:
+      - source: my_password
+        target: my_password
+        uid: '999'
+        gid: '0'
+        mode: 0440
+    networks:
+      mynet:
+        ipv4_address: 172.16.0.10
+    volume:
+      - type: volume
+        source:
+        target:
+# uWSGI Container
+  app-proxy:
+    image: app-proxy:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.uwsgi
+    container_name: uwsgi-proxy
+    deploy:
+      endpoint_mode: vip
+      constraints:
+        - "node.role==manager"
+    networks:
+      mynet:
+        ipv4_address: 172.16.0.15
+    volume:
+      - type: volume
+        source:
+        target:
+# Nginx Container
+  www-proxy:
+    depends_on:
+      - django
+    image: www-proxy:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.nginx
+      args:
+        BASE_IMAGE: django:latest
+    container_name: nginx-proxy
+    deploy:
+      endpoint_mode: vip
+      constraints:
+        - "node.role==manager"
+    networks:
+      mynet:
+        ipv4_address: 172.16.0.30
+    volume:
+      - type: volume
+        source:
+        target:
+# DB container
+  app:
+    depends_on:
+      - app-proxy
+    image: app:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.db
+      args:
+        BASE_IMAGE: app-proxy:latest
+    container_name: "db-{{.Task.Slot}}"
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        max_replicas_per_node: 1
+      endpoint_mode: vip
+    networks:
+      mynet:
+        ipv4_address: 172.16.0.20
+    volume:
+      - type: volume
+        source:
+        target:
+
+configs:
+  nginx_config:
+    file: Configs/flask_lb_nginx.conf
+
+secrets:
+  my_password:
+    file: Secrets/my_password.txt
+
+networks:
+  mynet:
+    driver: overlay
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.0.0/24"

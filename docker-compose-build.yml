@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+# App container
+  django:
+    image: django:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.django
+    container_name: "app-{{.Task.Slot}}"
+# uWSGI Container
+  app-proxy:
+    image: app-proxy:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.uwsgi
+    container_name: uwsgi-proxy
+# Nginx Container
+  www-proxy:
+    depends_on:
+      - django
+    image: www-proxy:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.nginx
+      args:
+        BASE_IMAGE: django:latest
+    container_name: nginx-proxy
+# DB container
+  app:
+    depends_on:
+      - app-proxy
+    image: app:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.db
+      args:
+        BASE_IMAGE: app-proxy:latest
+    container_name: "db-{{.Task.Slot}}"
