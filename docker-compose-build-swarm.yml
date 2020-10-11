@@ -3,7 +3,7 @@ version: '3.8'
 services:
 # App container
   app:
-    image: django:latest
+    image: app:latest
     hostname: "app-{{.Task.Slot}}"
     env_file:
       - deployment.env
@@ -17,23 +17,12 @@ services:
     networks:
       - proxy_net
       - db_net
-# uWSGI Container
-  app-proxy:
-    image: app-proxy:latest
-    hostname: uwsgi-proxy
-    deploy:
-      mode: replicated
-      replicas: 1
-      endpoint_mode: vip
-      placement:
-        constraints:
-          - "node.role==manager"
-    networks:
-      - db_net
 # Nginx Container
   www-proxy:
     image: www-proxy:latest
     hostname: nginx-proxy
+    deploy:
+      mode: global
     ports:
       - target: 8000
         published: 8000
@@ -68,7 +57,7 @@ services:
         target: /var/lib/postgres/data
 
 configs:
-  nginx_config:
+  proxy_conf:
     file: configs/mysite_nginx_in_swarm.conf
 
 secrets:
