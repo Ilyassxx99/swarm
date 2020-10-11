@@ -1,0 +1,21 @@
+version: "3.8"
+
+volumes:
+  polls_clone:
+    name: polls_clone
+
+services:
+# Initilization Service
+# please run with:
+# docker-compose -f django-polls-deploy.yml -f django-polls-ops.yml run --rm init
+  init:
+    image: app1:latest
+    networks:
+      - polls_net
+    env_file:
+      - ./Configs/db.env
+    command: ["/bin/bash", "-c",
+              "python manage.py migrate;
+               python manage.py loaddata initial_data.json;
+               python manage.py createsuperuser"]
+    tty: true

@@ -6,7 +6,7 @@ services:
     networks:
       - polls_net
     volumes:
-      - polls_vol:/var/lib/postgres/data
+      - polls_vol:/var/lib/postgresql/data
     env_file:
       - ./Configs/db.env
 
