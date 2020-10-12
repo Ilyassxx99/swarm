@@ -37,7 +37,7 @@ services:
       - proxy_net
 # DB container
   galera:
-    image: pythonincontainers/galera:latest
+    image: galera:latest
     env_file:
       - ./db_params.env
     networks:

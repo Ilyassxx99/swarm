@@ -41,3 +41,12 @@ services:
     build:
       context: ./Dockerfiles
       dockerfile: Dockerfile.galera
+# nginx proxy for kubernetes deployment Image
+  www-proxy-kube:
+    depends_on:
+      - www-proxy
+    image: www-proxy-kube:latest
+    build:
+      context: ./django-polls
+      dockerfile: Dockerfile.nginx-kube
+    entrypoint: /bin/true
